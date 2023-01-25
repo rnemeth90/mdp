@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -34,9 +35,12 @@ func TestParseContent(t *testing.T) {
 }
 
 func TestRun(t *testing.T) {
-	if err := run(inputFile, false); err != nil {
+	var b bytes.Buffer
+	if err := run(inputFile, false, &b); err != nil {
 		t.Fatal(err)
 	}
+
+	resultFile := strings.TrimSpace(b.String())
 
 	result, err := ioutil.ReadFile(resultFile)
 	if err != nil {

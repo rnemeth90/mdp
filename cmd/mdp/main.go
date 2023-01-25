@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -59,13 +60,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := run(file, preview); err != nil {
+	if err := run(file, preview, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run(fileName string, preview bool) error {
+func run(fileName string, preview bool, w io.Writer) error {
 	var outName string
 
 	input, err := ioutil.ReadFile(fileName)
@@ -86,7 +87,7 @@ func run(fileName string, preview bool) error {
 		outName = tempName.Name()
 	}
 
-	fmt.Println(outName)
+	fmt.Fprintln(w, outName)
 	if err := saveHTML(outName, htmlData); err != nil {
 		return err
 	}
