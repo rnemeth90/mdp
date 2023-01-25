@@ -1,36 +1,58 @@
-package main_test
+package main
 
 import (
-	"fmt"
+	"bytes"
+	"io/ioutil"
 	"os"
-	"os/exec"
-	"runtime"
 	"testing"
 )
 
-var (
-	binName string = "mdp"
+const (
+	inputFile  = "./testdata/test1.md"
+	resultFile = "./test1.md.html"
+	goldenFile = "./testdata/goldenfile.html"
 )
 
-func TestMain(m *testing.M) {
-	fmt.Println("Building tool...")
-
-	if runtime.GOOS == "windows" {
-		binName += ".exe"
+func TestParseContent(t *testing.T) {
+	file, err := ioutil.ReadFile(inputFile)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	build := exec.Command("go", "build", "-o", binName)
+	result := parseContent(file)
 
-	if err := build.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "Cannot build tool %s: %s", binName, err)
-		os.Exit(1)
+	expected, err := ioutil.ReadFile(goldenFile)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	fmt.Println("Running tests...")
-	resultCode := m.Run()
+	if !bytes.Equal(result, expected) {
+		t.Logf("golden:\n%s\n", expected)
+		t.Logf("result:\n%s\n", result)
+		t.Error("Result content does not match golden file")
+	}
+}
 
-	fmt.Println("Cleaning up...")
-	os.Remove(binName)
+func TestRun(t *testing.T) {
+	if err := run(inputFile, false); err != nil {
+		t.Fatal(err)
+	}
 
-	os.Exit(resultCode)
+	result, err := ioutil.ReadFile(resultFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expected, err := ioutil.ReadFile(goldenFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !bytes.Equal(expected, result) {
+		t.Logf("golden:\n%s\n", expected)
+		t.Logf("result:\n%s\n", result)
+		t.Fatal("Result content does not match golden file")
+	}
+
+	os.Remove(resultFile)
 }

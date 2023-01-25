@@ -16,7 +16,10 @@ Or download the latest release [here](https://github.com/rnemeth90/mdp/releases)
 If you need help, submit an issue
 
 ## To Do
-- [ ]
+- [x] Add ability to preview a file in browser
+- [x] Create preview html file in temp directory
+- [x] Pause while the file is being previewed
+- [x] Remove preview file after exiting application
 
 ## Version History
 * 0.1
