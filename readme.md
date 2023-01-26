@@ -20,6 +20,7 @@ If you need help, submit an issue
 - [x] Create preview html file in temp directory
 - [x] Pause while the file is being previewed
 - [x] Remove preview file after exiting application
+- [x] update run function to use io.writer, then update tests
 
 ## Version History
 * 0.1
