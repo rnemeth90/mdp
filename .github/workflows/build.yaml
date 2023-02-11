@@ -40,16 +40,21 @@ jobs:
     - run: |
         go version
         cd ./cmd/mdp/
+        mkdir builds
         ls -lisa
         if [ ! -e *.mod ]; then
           go mod init ${GITHUB_REPOSITORY}
         fi
         go mod tidy
         go build -o mdp -ldflags "-X main.Version=${GITHUB_REF_NAME} -X main.BuiltBy=github-actions" main.go
-        execFile=$(find . -type f -executable)
-        echo "Copying $execFile"
-        cp mdp ../../
-        ls -lisa ../../
+        mv mdp builds/
+        ls -lisa builds
+
+    - name: go test
+      id: test
+      run: | 
+        cd ./cmd/mdp
+        go test -v
 
     - run: git version
     - run: git branch
@@ -87,7 +92,8 @@ jobs:
       with:
         name: ${{ env.GITHUB_REF_NAME }}
         tag: ${{ env.GITHUB_REF_NAME }}
-        artifacts: mdp
+        artifacts: ./cmd/mdp/builds/mdp
         bodyFile: "body.log"
         token: ${{ secrets.GITHUB_TOKEN }}
         removeArtifacts: true
+        allowUpdates: true

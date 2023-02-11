@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday/v2"
+	"github.com/spf13/pflag"
 	"github.com/yosssi/gohtml"
 )
 
@@ -43,17 +43,24 @@ var (
 )
 
 func init() {
-	flag.StringVar(&file, "f", "", "the markdown file to preview")
-	flag.BoolVar(&preview, "p", false, "preview the file")
+	pflag.StringVar(&file, "f", "", "the markdown file to preview")
+	pflag.BoolVar(&preview, "p", false, "preview the file")
 }
 
 func usage() {
 	fmt.Println(os.Args[0])
-	flag.PrintDefaults()
+
+	fmt.Println()
+	fmt.Println("Usage:")
+	fmt.Printf("  mdp --f myfile.md\n")
+	fmt.Printf("  mdp --f myfile.md --p\n\n")
+
+	fmt.Println("Options:")
+	pflag.PrintDefaults()
 }
 
 func main() {
-	flag.Parse()
+	pflag.Parse()
 
 	if file == "" {
 		usage()
@@ -92,16 +99,11 @@ func run(fileName string, preview bool, w io.Writer) error {
 		return err
 	}
 	if preview {
-		if err := saveHTML(outName, htmlData); err != nil {
-			return err
-		}
-		if err != nil {
-			return err
-		}
 		if err := previewFile(outName); err != nil {
 			return err
 		}
 		fmt.Println("Press enter to exit.")
+		// watchFile(fileName)
 		fmt.Scanln()
 		os.Remove(outName)
 	}

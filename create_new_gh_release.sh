@@ -51,7 +51,7 @@ cd build
 [ -f go.mod ] || go mod init rnemeth90/$CUR_DIR
 go mod tidy
 set -x
-go build -ldflags "-X main.Version=$newtag -X main.BuiltBy=bash" cmd/mdp/main.go
+go build -o mdp -ldflags "-X main.Version=$newtag -X main.BuiltBy=bash" main.go
 set +x
 cd ..
 echo "GoLang binary built as build/main"
